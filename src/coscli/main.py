@@ -16,7 +16,7 @@ app = typer.Typer(
     context_settings={"help_option_names": ["-h", "--help"]},
     rich_markup_mode="rich",
     add_completion=False,
-    rich_help_panel="cspcli",
+    rich_help_panel="coscli",
     help="Command line tool for managing Tencent Cloud COS (Cloud Object Storage)",
 )
 
@@ -126,6 +126,7 @@ def list():
     client = create_client()
 
     marker: str = ""
+    contents = []
     while True:
         response = client.list_objects(
             Bucket="",
@@ -134,14 +135,33 @@ def list():
             MaxKeys=100,
         )
         if "Contents" in response:
-            print(f"total {len(response['Contents'])}")
-            for content in response["Contents"]:
-                print(
-                    f"{content['LastModified']} {size_formater(content['Size']):>10} {content['Key']}"
-                )
+            contents.extend(response["Contents"])
+            # print(f"total {len(response['Contents'])}")
+            # for content in response["Contents"]:
+            #     print(
+            #         f"{content['LastModified']} {size_formater(content['Size']):>10} {content['Key']}"
+            #     )
         if response["IsTruncated"] == "false":
             break
         marker = response["NextMarker"]
+
+    print(f"total {len(contents)}")
+    for content in contents:
+        print(
+            f"{content['LastModified']} {size_formater(content['Size']):>10} {content['Key']}"
+        )
+
+
+# @app.command()
+# def delete(obj_name: str):
+#     """Delete an object from the bucket."""
+#     client = create_client()
+
+#     response = client.delete_object(
+#         Bucket="",
+#         Key=obj_name,
+#     )
+#     print(response)
 
 
 @app.callback()

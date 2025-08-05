@@ -9,6 +9,5 @@ dependencies = [
     "typer>=0.10.0",
 ]
 
-
 [project.scripts]
 coscli = "coscli.main:app"
