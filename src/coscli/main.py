@@ -115,6 +115,7 @@ def get(obj_name: str, filepath: str = ""):
                 progress_callback=percentage,
             )
             break
+
         except (CosClientError, CosServiceError) as e:
             print(e)
     print(f"Download completed in {datetime.now() - start_time}s")
@@ -136,11 +137,7 @@ def list():
         )
         if "Contents" in response:
             contents.extend(response["Contents"])
-            # print(f"total {len(response['Contents'])}")
-            # for content in response["Contents"]:
-            #     print(
-            #         f"{content['LastModified']} {size_formater(content['Size']):>10} {content['Key']}"
-            #     )
+
         if response["IsTruncated"] == "false":
             break
         marker = response["NextMarker"]
@@ -152,16 +149,21 @@ def list():
         )
 
 
-# @app.command()
-# def delete(obj_name: str):
-#     """Delete an object from the bucket."""
-#     client = create_client()
+@app.command()
+def delete(obj_name: str):
+    """Delete an object from the bucket."""
+    client = create_client()
 
-#     response = client.delete_object(
-#         Bucket="",
-#         Key=obj_name,
-#     )
-#     print(response)
+    print(f"Deleting {obj_name}")
+    try:
+        client.delete_object(
+            Bucket="",
+            Key=obj_name,
+        )
+    except (CosClientError, CosServiceError) as e:
+        print(e)
+    else:
+        print(f"Object {obj_name} deleted successfully.")
 
 
 @app.callback()
